@@ -16,7 +16,7 @@ public:
 	Iterator<T> begin();
 	Iterator<T> end();
 
-	bool contains(const T& object) const;
+	bool contains(const T object) const;
 	bool isEmpty() const;
 	void print() const;
 
@@ -65,7 +65,7 @@ inline void List<T>::initialize()
 template<typename T>
 inline void List<T>::destroy()
 {
-	for (Node<T>* iter = m_first; iter nullptr;)
+	for (Node<T>* iter = m_first; iter != nullptr;)
 	{
 		Node<T>* temp = iter;
 		iter = iter->next;
@@ -82,11 +82,11 @@ inline Iterator<T> List<T>::begin()
 template<typename T>
 inline Iterator<T> List<T>::end()
 {
-	return Iterator<T>(m_last);
+	return Iterator<T>(m_last->next);
 }
 
 template<typename T>
-inline bool List<T>::contains(const T& object) const
+inline bool List<T>::contains(const T object) const
 {
 	for (Iterator<T> iter = begin(); iter != end(); ++iter)
 	{
@@ -100,7 +100,7 @@ inline bool List<T>::contains(const T& object) const
 template<typename T>
 inline bool List<T>::isEmpty() const
 {
-	return m_nodeCount == 0;
+	return m_nodeCount <= 0;
 }
 
 template<typename T>
@@ -119,10 +119,8 @@ inline void List<T>::pushFront(const T& value)
 
 	if (m_first)
 	{
-		node->next = m_first->next;
-
-		if (m_first->next)
-			m_first->next->previous = node;
+		m_first->previous = node;
+		node->next = m_first;
 	}
 
 	m_first = node;
@@ -139,10 +137,8 @@ inline void List<T>::pushBack(const T& value)
 
 	if (m_last)
 	{
-		node->previous = m_last->previous;
-
-		if (m_last->previous)
-			m_last->previous->next = node;
+		m_last->next = node;
+		node->previous = m_last;
 	}
 
 	m_last = node;
@@ -158,7 +154,113 @@ inline bool List<T>::insert(const T& value, int index)
 	if (index < 0 || index >= m_nodeCount)
 		return false;
 
+	Node<T>* newNode = new Node<T>(value);
+	Node<T>* oldNode = m_first;
 
+	for (int i = 0; i < index; i++)
+	{
+		if (oldNode->next)
+			oldNode = oldNode->next;
+	}
 
-	return false;
+	if (oldNode->previous)
+		oldNode->previous->next = newNode;
+
+	newNode->previous = oldNode->previous;
+	oldNode->previous = newNode;
+	newNode->next = oldNode;
+
+	if (index == 0)
+		m_first = newNode;
+	else if (index == m_nodeCount - 1)
+		m_last = newNode;
+
+	return true;
+}
+
+template<typename T>
+inline bool List<T>::remove(const T& value)
+{
+	if (m_first->data == value)
+	{
+		initialize();
+		return true;
+	}
+
+	bool nodeRemoved = false;
+
+	Node<T>* nodeToRemove = m_first;
+
+	for (int i = 0; i < m_nodeCount; i++)
+	{
+		if (nodeToRemove->next)
+			nodeToRemove = nodeToRemove->next;
+
+		if (nodeToRemove->data == value)
+		{
+			if (nodeToRemove->previous)
+				nodeToRemove->previous->next = nodeToRemove->next;
+			if (nodeToRemove->next)
+				nodeToRemove->next->previous = nodeToRemove->previous;
+
+			nodeRemoved = true;
+			break;
+		}
+	}
+
+	return nodeRemoved;
+}
+
+template<typename T>
+inline void List<T>::sort()
+{
+	T key;
+	int j = 0;
+	int i = 1;
+	Node<T>* previousNode;
+
+	for (Node<T>* node = m_first->next; node != nullptr; node = node->next)
+	{
+		key = node->data;
+		j = i - 1;
+		previousNode = node->previous;
+
+		while (key < previousNode->data && j > 0)
+		{
+			j--;
+			previousNode = previousNode->previous;
+		}
+
+		remove(key);
+		insert(key, j);
+		i++;
+	}
+}
+
+template<typename T>
+inline bool List<T>::getData(Iterator<T>& iter, int index)
+{
+	if (index < 0 || index >= m_nodeCount)
+		return false;
+
+	iter = begin();
+
+	for (int i = 0; i < index; i++)
+		++iter;
+
+	return true;
+}
+
+template<typename T>
+inline int List<T>::getLength() const
+{
+	return m_nodeCount;
+}
+
+template<typename T>
+inline const List<T>& List<T>::operator=(const List<T>& otherList)
+{
+	destroy();
+	m_first = otherList.m_first;
+	m_last = otherList.m_last;
 }
