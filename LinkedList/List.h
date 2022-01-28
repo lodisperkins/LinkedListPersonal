@@ -175,10 +175,13 @@ inline bool List<T>::insert(const T& value, int index)
 	oldNode->previous = newNode;
 	newNode->next = oldNode;
 
+	m_nodeCount++;
+
 	if (index == 0)
 		m_first = newNode;
 	else if (index == m_nodeCount - 1)
 		m_last = newNode;
+
 
 	return true;
 }
@@ -237,7 +240,7 @@ inline void List<T>::sort()
 	int i = 1;
 	Iterator<T> previousIter;
 
-	for (Iterator<T> iter = ++begin(); iter != end(); ++iter)
+	for (Iterator<T> iter = ++begin(); iter != end();)
 	{
 		key = *iter;
 		j = i - 1;
@@ -248,10 +251,14 @@ inline void List<T>::sort()
 		{
 			j--;
 			--previousIter;
+
+			if (previousIter == Iterator<T>())
+				break;
 		}
 
+		++iter;
 		remove(key);
-		insert(key, j);
+		insert(key, j + 1);
 		i++;
 	}
 }
