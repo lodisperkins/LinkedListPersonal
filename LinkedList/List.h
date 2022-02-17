@@ -30,23 +30,21 @@ public:
 	int getLength() const;
 	const List<T>& operator =(const List<T>& otherList);
 private:
-	Node<T>* m_first;
-	Node<T>* m_last;
-	int m_nodeCount;
+	Node<T>* m_first = nullptr;
+	Node<T>* m_last = nullptr;
+	int m_nodeCount = 0;
 };
 
 template<typename T>
 inline List<T>::List()
 {
 	initialize();
-	m_first = nullptr;
-	m_last = nullptr;
 }
 
 template<typename T>
 inline List<T>::List(const List<T>& other)
 {
-	this = other;
+	*this = other;
 }
 
 template<typename T>
@@ -66,6 +64,9 @@ inline void List<T>::initialize()
 template<typename T>
 inline void List<T>::destroy()
 {
+	if (isEmpty())
+		return;
+
 	for (Node<T>* iter = m_first; iter != nullptr;)
 	{
 		Node<T>* temp = iter;
@@ -85,6 +86,9 @@ inline Iterator<T> List<T>::begin() const
 template<typename T>
 inline Iterator<T> List<T>::end() const
 {
+	if (isEmpty())
+		return Iterator<T>(nullptr);
+
 	return Iterator<T>(m_last->next);
 }
 
@@ -156,8 +160,14 @@ inline void List<T>::pushBack(const T& value)
 template<typename T>
 inline bool List<T>::insert(const T& value, int index)
 {
-	if (index < 0 || index >= m_nodeCount)
+	if (index < 0 || index >= m_nodeCount && !isEmpty())
 		return false;
+
+	if (isEmpty())
+	{
+		pushFront(value);
+		return true;
+	}
 
 	Node<T>* newNode = new Node<T>(value);
 	Node<T>* oldNode = m_first;
@@ -189,6 +199,8 @@ inline bool List<T>::insert(const T& value, int index)
 template<typename T>
 inline bool List<T>::remove(const T& value)
 {
+	if (isEmpty())
+		return false;
 
 	Node<T>* nodeToRemove = m_first;
 
@@ -235,6 +247,9 @@ inline bool List<T>::remove(const T& value)
 template<typename T>
 inline void List<T>::sort()
 {
+	if (isEmpty())
+		return;
+
 	T key;
 	int j = 0;
 	int i = 1;
@@ -286,7 +301,17 @@ inline int List<T>::getLength() const
 template<typename T>
 inline const List<T>& List<T>::operator =(const List<T>& otherList)
 {
+
 	destroy();
-	m_first = otherList.m_first;
-	m_last = otherList.m_last;
+
+	if (otherList.isEmpty())
+	{
+		initialize();
+		return *this;
+	}
+
+	for (Iterator<T> iter = otherList.begin(); iter != otherList.end(); ++iter)
+		pushBack(*iter);
+
+	return *this;
 }
