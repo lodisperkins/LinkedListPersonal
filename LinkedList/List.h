@@ -322,6 +322,7 @@ inline const List<T>& List<T>::operator =(const List<T>& otherList)
 
 	return *this;
 }
+
 template<typename T>
 inline int List<T>::startTest()
 {
@@ -352,11 +353,17 @@ inline int List<T>::startTest()
 		{
 			val += *iter;
 			if (val > 6)
+			{
+				std::cout << "When used in a for loop, the iterator doesn't stop as it should. This could be a problem with the start or end function" << std::endl;
 				throw std::exception();
+			}
 		}
 
 		if (val != 6)
+		{
+			std::cout << "When used in a for loop, the iterator doesn't stop as it should. This could be a problem with the start or end function" << std::endl;
 			throw std::exception();
+		}
 
 		list->print();
 		Iterator<int> iter;
@@ -364,8 +371,11 @@ inline int List<T>::startTest()
 		list->insert(3, 3);
 		list->sort();
 
-		if (list->contains(1))
+		if (list->checkIfIncludes(1))
+		{
+			std::cout << "The list still contains items that were passed into the remove function" << std::endl;
 			throw std::exception();
+		}
 
 		delete list;
 	}
@@ -373,9 +383,6 @@ inline int List<T>::startTest()
 	{
 		score--;
 	}
-
-
-	system("cls");
 
 	score++;
 
@@ -394,12 +401,17 @@ inline int List<T>::startTest()
 		Iterator<int> iter;
 
 		list.getData(iter, 4);
-
 		if (*iter != 5)
+		{
+			std::cout << "Get data function doesn't give the iterator passed in the correct value" << std::endl;
 			throw std::exception();
+		}
 
 		if (!checkOrder(list))
+		{
+			std::cout << "The list order is not correct when multiple add node functions are used in succession" << std::endl;
 			throw std::exception();
+		}
 	}
 	catch (...)
 	{
@@ -421,7 +433,10 @@ inline int List<T>::startTest()
 		list.pushFront(1);
 
 		if (!checkOrder(list))
+		{
+			std::cout << "The list order is not correct when the push front function is used to add nodes" << std::endl;
 			throw std::exception();
+		}
 	}
 	catch (...)
 	{
@@ -441,7 +456,10 @@ inline int List<T>::startTest()
 		list.pushBack(5);
 
 		if (!checkOrder(list))
+		{
+			std::cout << "The list order is not correct when the push back function is used to add nodes" << std::endl;
 			throw std::exception();
+		}
 	}
 	catch (...)
 	{
@@ -462,7 +480,10 @@ inline int List<T>::startTest()
 		list.insert(4, 3);
 
 		if (!checkOrder(list))
+		{
+			std::cout << "The list order is not correct when the insert function is used to add nodes" << std::endl;
 			throw std::exception();
+		}
 	}
 	catch (...)
 	{
@@ -485,7 +506,10 @@ inline int List<T>::startTest()
 		list.sort();
 
 		if (!checkOrder(list))
+		{
+			std::cout << "The list order is not correct after sorting" << std::endl;
 			throw std::exception();
+		}
 
 		list.destroy();
 		list.sort();
@@ -513,16 +537,25 @@ inline int List<T>::startTest()
 		list.pushBack(5);
 
 		if (checkOrder(list2))
+		{
+			std::cout << "The list data is not copied in the copy constructor" << std::endl;
 			throw std::exception();
+		}
 
 		list2 = list;
 
 		if (!checkOrder(list2))
+		{
+			std::cout << "The list data is not copied in the copy constructor" << std::endl;
 			throw std::exception();
+		}
 
 		list.destroy();
 		if (!checkOrder(list2))
+		{
+			std::cout << "The list data is not copied in the copy constructor" << std::endl;
 			throw std::exception();
+		}
 	}
 	catch (...)
 	{
