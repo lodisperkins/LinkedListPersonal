@@ -1,6 +1,11 @@
+
 #pragma once
 #include "Iterator.h"
+#include "Node.h"
 #include <iostream>
+
+#include <Windows.h>
+#include <excpt.h>
 
 template <typename T>
 class List
@@ -29,6 +34,8 @@ public:
 	bool getData(Iterator<T>& iter, int index);
 	int getLength() const;
 	const List<T>& operator =(const List<T>& otherList);
+	int startTest();
+	bool checkOrder(List<T>& list);
 private:
 	Node<T>* m_first = nullptr;
 	Node<T>* m_last = nullptr;
@@ -314,4 +321,231 @@ inline const List<T>& List<T>::operator =(const List<T>& otherList)
 		pushBack(*iter);
 
 	return *this;
+}
+template<typename T>
+inline int List<T>::startTest()
+{
+
+
+	float score = 0;
+
+
+	score++;
+
+	try
+	{
+		List<int>* list = new List<int>();
+		list->pushBack(1);
+		list->pushFront(2);
+		list->destroy();
+		list->destroy();
+		for (Iterator<int> iter = list->begin(); iter != list->end(); ++iter)
+			int val = *iter;
+		list->print();
+		list->pushBack(3);
+		list->remove(1);
+		list->pushBack(2);
+		list->pushBack(1);
+		int val = 0;
+
+		for (Iterator<int> iter = list->begin(); iter != list->end(); ++iter)
+		{
+			val += *iter;
+			if (val > 6)
+				throw std::exception();
+		}
+
+		if (val != 6)
+			throw std::exception();
+
+		list->print();
+		Iterator<int> iter;
+		list->getData(iter, 0);
+		list->insert(3, 3);
+		list->sort();
+
+		if (list->contains(1))
+			throw std::exception();
+
+		delete list;
+	}
+	catch (...)
+	{
+		score--;
+	}
+
+
+	system("cls");
+
+	score++;
+
+	try
+	{
+
+		//1/2
+		List<int> list = List<int>();
+
+		list.insert(3, 0);
+		list.insert(2, 0);
+		list.pushFront(1);
+		list.pushBack(5);
+		list.insert(4, 3);
+
+		Iterator<int> iter;
+
+		list.getData(iter, 4);
+
+		if (*iter != 5)
+			throw std::exception();
+
+		if (!checkOrder(list))
+			throw std::exception();
+	}
+	catch (...)
+	{
+		score--;
+	}
+
+	score++;
+
+	try
+	{
+		//1/2
+		List<int> list = List<int>();
+
+		list.destroy();
+		list.pushFront(5);
+		list.pushFront(4);
+		list.pushFront(3);
+		list.pushFront(2);
+		list.pushFront(1);
+
+		if (!checkOrder(list))
+			throw std::exception();
+	}
+	catch (...)
+	{
+		score--;
+	}
+
+	score++;
+
+	try
+	{
+		//1/2
+		List<int> list = List<int>();
+		list.pushBack(1);
+		list.pushBack(2);
+		list.pushBack(3);
+		list.pushBack(4);
+		list.pushBack(5);
+
+		if (!checkOrder(list))
+			throw std::exception();
+	}
+	catch (...)
+	{
+		score--;
+	}
+
+	score++;
+
+	try
+	{
+		//1/2
+		List<int> list = List<int>();
+
+		list.insert(5, 0);
+		list.insert(1, 0);
+		list.insert(2, 1);
+		list.insert(3, 2);
+		list.insert(4, 3);
+
+		if (!checkOrder(list))
+			throw std::exception();
+	}
+	catch (...)
+	{
+		score--;
+	}
+
+	score++;
+
+	try
+	{
+		//1/2
+		//return 0;
+		List<int> list = List<int>();
+
+		list.insert(1, 0);
+		list.insert(3, 0);
+		list.pushFront(4);
+		list.pushBack(2);
+		list.insert(5, 3);
+		list.sort();
+
+		if (!checkOrder(list))
+			throw std::exception();
+
+		list.destroy();
+		list.sort();
+
+		list.destroy();
+		list.pushBack(1);
+		list.sort();
+	}
+	catch (...)
+	{
+		score--;
+	}
+
+	score++;
+
+	try
+	{
+		List<int> list = List<int>();
+		List<int> list2 = List<int>(list);
+
+		list.pushBack(1);
+		list.pushBack(2);
+		list.pushBack(3);
+		list.pushBack(4);
+		list.pushBack(5);
+
+		if (checkOrder(list2))
+			throw std::exception();
+
+		list2 = list;
+
+		if (!checkOrder(list2))
+			throw std::exception();
+
+		list.destroy();
+		if (!checkOrder(list2))
+			throw std::exception();
+	}
+	catch (...)
+	{
+		score--;
+	}
+
+	return score;
+}
+
+template<typename T>
+inline bool List<T>::checkOrder(List<T>& list)
+{
+	if (list.m_nodeCount != 5)
+		return false;
+
+	Node<int>* iter = list.m_first;
+	for (int i = 0; i < list.m_nodeCount; i++)
+	{
+		if (iter->data != i + 1)
+			return false;
+
+		iter = iter->next;
+	}
+
+	return true;
 }
