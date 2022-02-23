@@ -371,7 +371,7 @@ inline int List<T>::startTest()
 		list->insert(3, 3);
 		list->sort();
 
-		if (list->checkIfIncludes(1))
+		if (list->contains(1))
 		{
 			std::cout << "The list still contains items that were passed into the remove function" << std::endl;
 			throw std::exception();
